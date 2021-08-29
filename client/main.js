@@ -1,50 +1,55 @@
-const usernameForm = document.getElementById('username-form')
-const chat = document.getElementById('chat')
+const signupForm = document.getElementById('signup-form')
 
 let username = 'Guest'
 
-usernameForm.addEventListener('submit', e => {
+signupForm.addEventListener('submit', e => {
   e.preventDefault()
-  const value = document.getElementById('username').value.slice(0, 20)
-  if (value) {
-    username = value
-  }
-  usernameForm.parentElement.remove()
-  chat.style = ''
+
+  // Set username
+  username = document.getElementById('username').value.slice(0, 20) ?? 'Guest'
+
+  // Remove signup while making chat visible
+  signupForm.parentElement.remove()
+  document.getElementById('chat').style = ''
+
+  // Create socket
   const socket = io()
   socket.emit('username', username)
   setup(socket)
 })
 
 function setup (socket) {
-  const form = document.getElementById('form')
-  const input = document.getElementById('input')
+  const chatbox = document.getElementById('chatbox')
+  const chatboxInput = document.getElementById('chatbox-input')
   const userCount = document.getElementById('user-count')
   const messages = document.getElementById('messages')
 
-  form.addEventListener('submit', e => {
+  // When user sends new message
+  chatbox.addEventListener('submit', e => {
     e.preventDefault()
-    if (input.value) {
-      socket.emit('messageCreate', input.value)
+    if (chatboxInput.value) {
+      socket.emit('messageCreate', chatboxInput.value.trim())
       messageCreate({
         user: username,
-        message: input.value
+        message: chatboxInput.value.trim()
       })
-      input.value = ''
+      chatboxInput.value = ''
     }
   })
 
-  const bold = s => `<strong>${s}</strong>`
-
+  // Displays new message
   function messageCreate ({ user, message }) {
     const item = document.createElement('li')
+    // Adds "user: " if there's a user
     item.innerHTML = user
       ? `<strong>${user}</strong>: ${message}`
-      : `${message}`
+      : message
     messages.appendChild(item)
+    // Scroll to bottom
     window.scrollTo(0, document.body.scrollHeight)
   }
 
+  // User added, update users online count
   function userAdd ({ user, userCount: count }) {
     messageCreate({
       message: `${user} joined the chat`
@@ -52,6 +57,7 @@ function setup (socket) {
     userCount.textContent = `Users online: ${count}`
   }
 
+  // User left, update users online count
   function userRemove ({ user, userCount: count }) {
     messageCreate({
       message: `${user} left the chat`

@@ -15,21 +15,22 @@
     <small>By MarsRon</small>
   </div>
 
-  <div id="username-prompt">
-    <form id="username-form" action="">
+  <div id="signup">
+    <form id="signup-form" action="" autocomplete="off">
       <label for="username"></label><br>
       <input type="text" id="username" name="username" placeholder="Username" />
-      <button>Ok</button>
-    </form>
-  </div>
-  <div id="chat" style="display:none;">
-    <h4 id="user-count">Users online: 0</h4>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input type="text" id="input" autocomplete="off" /><button id="send">Send</button>
+      <button>Join</button>
     </form>
   </div>
 
+  <div id="chat" style="display:none;">
+    <h4 id="user-count">Users online: 0</h4>
+    <ul id="messages"></ul>
+    <form id="chatbox" action="" autocomplete="false">
+      <input type="text" id="chatbox-input" autocomplete="false" />
+      <button id="send-button">Send</button>
+    </form>
+  </div>
 
   <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
   <script src="main.js"></script>
