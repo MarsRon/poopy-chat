@@ -20,7 +20,7 @@ io.on('connection', socket => {
   // User joins with username
   socket.on('username', async username => {
     socket.username = username
-    socket.broadcast.emit('userAdd', {
+    io.sockets.emit('userAdd', {
       user: socket.username,
       userCount: (await io.sockets.allSockets()).size
     })
