@@ -1,14 +1,15 @@
+// Modules
 const express = require('express')
 const http = require('http')
 const { Server } = require('socket.io')
-
 const path = require('path')
-const PORT = 3000
 
+const PORT = 3000
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server)
 
+// Static files
 app.use(express.static(path.join(__dirname, '../client')))
 
 app.get('/', (req, res) => {
@@ -16,24 +17,24 @@ app.get('/', (req, res) => {
 })
 
 io.on('connection', socket => {
-  socket.on('username', username => {
+  // User joins with username
+  socket.on('username', async username => {
     socket.username = username
-    io.sockets.allSockets().then(allSockets => {
-      socket.emit('userAdd', {
-        user: socket.username,
-        userCount: allSockets.size
-      })
-      socket.broadcast.emit('userAdd', {
-        user: socket.username,
-        userCount: allSockets.size
-      })
+    socket.broadcast.emit('userAdd', {
+      user: socket.username,
+      userCount: (await io.sockets.allSockets()).size
     })
   })
 
+  // New message sent
   socket.on('messageCreate', message => {
-    socket.broadcast.emit('messageCreate', { user: socket.username, message })
+    socket.broadcast.emit('messageCreate', {
+      user: socket.username,
+      message
+    })
   })
 
+  // User leaves
   socket.on('disconnect', async () => {
     socket.broadcast.emit('userRemove', {
       user: socket.username,
@@ -42,6 +43,7 @@ io.on('connection', socket => {
   })
 })
 
+// Socket.io listens to port
 server.listen(PORT, () => {
-  console.log(`Listening on localhost:${PORT}`)
+  console.log(`Listening on *:${PORT}`)
 })
