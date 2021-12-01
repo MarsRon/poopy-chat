@@ -40,11 +40,19 @@ function setup (socket) {
   // Displays new message
   function messageCreate ({ user, message }) {
     const item = document.createElement('li')
+
     // Adds "user: " if there's a user
-    item.innerHTML = user
-      ? `<strong>${user}</strong>: ${message}`
-      : message
+    if (user) {
+      const boldUsername = document.createElement('strong')
+      boldUsername.innerText = `${user}: `
+      item.appendChild(boldUsername)
+    }
+
+    const content = document.createTextNode(message)
+    item.appendChild(content)
+
     messages.appendChild(item)
+
     // Scroll to bottom
     window.scrollTo(0, document.body.scrollHeight)
   }
